@@ -93,19 +93,18 @@ fun MainScreen() {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 48.dp)
+                    .padding(horizontal = 120.dp)
                     .height(70.dp),
                 shape = MaterialTheme.shapes.medium,
                 colors = ButtonDefaults.buttonColors(topbarbackgroundColor)
             ) {
                 Text(
-                    text = "Scanner les appareils bluetooth à proximité",
+                    text = "Scanner",
                     color = boutontext,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-
         }
     }
 }
