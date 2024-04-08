@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="bleu_cyan">#93F9FD</color>
     <color name="bleu_fonce">#061F50</color>
+    <color name="bleu_fonce_scan_activity">#04163D</color>
     <color name="bleu_clair">#49A9EE</color>
     <color name="vert">#82EF5E</color>
 </resources>
