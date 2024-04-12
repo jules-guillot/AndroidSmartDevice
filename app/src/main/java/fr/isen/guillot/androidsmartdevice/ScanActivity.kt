@@ -34,6 +34,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.*
+import android.bluetooth.BluetoothAdapter
+import android.content.Context
+import android.content.Intent
+import androidx.compose.material3.Button
+import androidx.compose.ui.platform.LocalContext
+
 @OptIn(ExperimentalMaterial3Api::class)
 class ScanActivity : ComponentActivity() {
     @SuppressLint("CoroutineCreationDuringComposition")
@@ -55,6 +61,14 @@ class ScanActivity : ComponentActivity() {
                 devices.add(BluetoothDevice("La PS6", "00:11:22:33:47:55", R.drawable.faible))
                 devices.add(BluetoothDevice("L'écran plat de la cuisine", "01:11:22:33:44:55", R.drawable.moyen))
                 }
+
+            MaterialTheme(typography = AppTypography) {
+                TopAppBar(
+                    title = { Text("Scanner Bluetooth", color = topbartext, style = MaterialTheme.typography.displayLarge) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = topbarbackgroundColor)
+                )
+                BluetoothStatusHandler() // Gère l'état Bluetooth ici
+            }
 
             MaterialTheme(
                 typography = AppTypography
@@ -165,6 +179,40 @@ fun DeviceItem(device: BluetoothDevice) {
             Text(text = "   " + device.name, style = MaterialTheme.typography.bodyLarge)
             Text(text = "           " + device.macAddress, style = MaterialTheme.typography.bodySmall)
         }
+    }
+}
+
+fun isBluetoothAvailable(): Boolean {
+    val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    return bluetoothAdapter != null
+}
+
+fun isBluetoothEnabled(): Boolean {
+    val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    return bluetoothAdapter?.isEnabled ?: false
+}
+
+fun requestBluetoothEnable(context: Context) {
+    val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+    //context.startActivity(enableBtIntent)
+}
+
+@Composable
+fun BluetoothStatusHandler() {
+    val context = LocalContext.current
+
+    if (!isBluetoothAvailable()) {
+        Text("Bluetooth n'est pas disponible sur ce dispositif.")
+    } else if (!isBluetoothEnabled()) {
+        Column {
+            Text("Bluetooth est désactivé.")
+            Button(onClick = { requestBluetoothEnable(context) }) {
+                Text("Activer Bluetooth")
+            }
+        }
+    } else {
+        // Continue with normal operation
+        //DeviceList()
     }
 }
 
