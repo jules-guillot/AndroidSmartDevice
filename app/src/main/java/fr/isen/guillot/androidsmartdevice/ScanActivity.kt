@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,6 +38,7 @@ class ScanActivity : ComponentActivity() {
             val topbartext = colorResource(id = R.color.vert)
             val topbarbackgroundColor = colorResource(id = R.color.bleu_fonce)
             val topscannerBLE = colorResource(id = R.color.bleu_fonce_scan_activity)
+            val lignedechargement = colorResource(id = R.color.white)
             MaterialTheme(
                 typography = AppTypography
             ) {
@@ -57,16 +60,24 @@ class ScanActivity : ComponentActivity() {
                                 .clickable(onClick = { firstPhotoVisible = false })
                         )
                     } else {
-                        Image(
-                            painter = painterResource(R.drawable.pause),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .offset(x = 0.dp, y = 70.dp)
-                                .padding(horizontal = 150.dp)
-                                .height(100.dp)
-                                .background(topscannerBLE)
-                                .clickable(onClick = { firstPhotoVisible = true })
-                        )
+                        Column {
+                            Image(
+                                painter = painterResource(R.drawable.pause),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .offset(x = 0.dp, y = 70.dp)
+                                    .padding(horizontal = 150.dp)
+                                    .height(100.dp)
+                                    .background(topscannerBLE)
+                                    .clickable(onClick = { firstPhotoVisible = true })
+                            )
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 0.dp, vertical = 72.dp),
+                                color = lignedechargement
+                            )
+                        }
                     }
                 }
                 TopAppBar(
