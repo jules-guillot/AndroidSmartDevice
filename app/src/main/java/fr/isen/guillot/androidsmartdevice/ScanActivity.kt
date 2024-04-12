@@ -51,11 +51,10 @@ class ScanActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 devices.add(BluetoothDevice("La tv", "00:11:22:33:44:55", R.drawable.fort))
                 devices.add(BluetoothDevice("La brosse à dent", "00:12:22:33:44:55", R.drawable.faible))
-                devices.add(BluetoothDevice("Le séche cheveux", "00:15:22:33:44:55", R.drawable.moyen))
+                devices.add(BluetoothDevice("Le sèche cheveux", "00:15:22:33:44:55", R.drawable.moyen))
                 devices.add(BluetoothDevice("La PS6", "00:11:22:33:47:55", R.drawable.faible))
                 devices.add(BluetoothDevice("L'écran plat de la cuisine", "01:11:22:33:44:55", R.drawable.moyen))
-                devices.add(BluetoothDevice("Thermomix", "00:11:22:33:44:58", R.drawable.fort))
-            }
+                }
 
             MaterialTheme(
                 typography = AppTypography
@@ -109,12 +108,12 @@ class ScanActivity : ComponentActivity() {
                             contentDescription = "Icone App"
                         )
                     }
-                } 
+                }
                 else {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 10.dp, vertical = 200.dp)
+                            .padding(horizontal = 10.dp, vertical = 175.dp)
+                            .size(width = 1000.dp, height = 15000.dp)
                     ) {
                         LazyColumn {
                             items(devices) { device ->
@@ -168,3 +167,4 @@ fun DeviceItem(device: BluetoothDevice) {
         }
     }
 }
+
