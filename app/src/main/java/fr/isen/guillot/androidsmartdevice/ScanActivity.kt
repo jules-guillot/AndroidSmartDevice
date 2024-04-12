@@ -102,7 +102,7 @@ class ScanActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 10.dp, vertical = 2000.dp)
+                            .padding(horizontal = 10.dp, vertical = 200.dp)
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.icon),
