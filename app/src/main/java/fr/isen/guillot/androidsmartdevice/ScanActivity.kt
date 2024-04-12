@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,17 +19,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-
+import androidx.compose.runtime.*
 @OptIn(ExperimentalMaterial3Api::class)
 class ScanActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            var firstPhotoVisible by remember { mutableStateOf(true) }
             val topbartext = colorResource(id = R.color.vert)
             val topbarbackgroundColor = colorResource(id = R.color.bleu_fonce)
             val topscannerBLE = colorResource(id = R.color.bleu_fonce_scan_activity)
@@ -40,23 +44,30 @@ class ScanActivity : ComponentActivity() {
                         .width(500.dp)
                         .height(180.dp)
                         .background(topscannerBLE)
-                )
-                Box(
-                    modifier = Modifier
-                        .offset(x = 50.dp, y = 70.dp)
-                        .padding(horizontal = 102.dp)
-                        .height(100.dp)
-                        .background(topscannerBLE),
-                    contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.play),
-                        contentDescription = "Icone play"
-                    )
-                    /*Image(
-                        painter = painterResource(id = R.drawable.pause),
-                        contentDescription = "Icone pause"
-                    )*/
+                    if (firstPhotoVisible) {
+                        Image(
+                            painter = painterResource(R.drawable.play),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .offset(x = 0.dp, y = 70.dp)
+                                .padding(horizontal = 150.dp)
+                                .height(100.dp)
+                                .background(topscannerBLE)
+                                .clickable(onClick = { firstPhotoVisible = false })
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.pause),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .offset(x = 0.dp, y = 70.dp)
+                                .padding(horizontal = 150.dp)
+                                .height(100.dp)
+                                .background(topscannerBLE)
+                                .clickable(onClick = { firstPhotoVisible = true })
+                        )
+                    }
                 }
                 TopAppBar(
                     title = {
@@ -81,4 +92,3 @@ class ScanActivity : ComponentActivity() {
         }
     }
 }
-
