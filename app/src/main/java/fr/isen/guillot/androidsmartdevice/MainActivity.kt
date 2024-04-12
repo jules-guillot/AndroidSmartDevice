@@ -11,7 +11,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import android.content.Intent
 import androidx.compose.foundation.Image
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
@@ -36,50 +35,38 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val topbartext = colorResource(id = R.color.vert)
-            val topbarbackgroundColor = colorResource(id = R.color.bleu_fonce)
+            val background = colorResource(id = R.color.bleu_fonce)
             val context = LocalContext.current
             val boutontext = colorResource(id = R.color.bleu_clair)
-            MaterialTheme(
-                typography = AppTypography
-            ) {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "Android Smart Device",
-                            color = topbartext,
-                            style = MaterialTheme.typography.displayLarge
-                        ) },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = topbarbackgroundColor
-                    )
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(painter = painterResource(id = R.drawable.icon), contentDescription = "Icone App")
-                    Spacer(modifier = Modifier.height(90.dp))
-                    Button(
-                        onClick = {
-                            val intent = Intent(context, ScanActivity::class.java)
-                            context.startActivity(intent)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 120.dp)
-                            .height(70.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(topbarbackgroundColor)
-                    ) {
-                        Text(
-                            text = "Scanner",
-                            color = boutontext,
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+            MaterialTheme {
+                CustomScaffoldWithTopAppBar(
+                    titleText = "  Android Smart Device",
+                    titleColor = topbartext,
+                    backgroundColor = background
+                ) { innerPadding ->
+                    // Ici, vous pouvez ajouter le contenu de votre page en utilisant innerPadding pour respecter les paddings du Scaffold
+                    // Exemple avec une simple liste:
+                    Column(modifier = Modifier.padding(innerPadding)) {
+                        Image(painter = painterResource(id = R.drawable.icon), contentDescription = "Icone App")
+                        Button(
+                            onClick = {
+                                val intent = Intent(context, ScanActivity::class.java)
+                                context.startActivity(intent)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 115.dp)
+                                .height(70.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            colors = ButtonDefaults.buttonColors(background)
+                        ) {
+                            Text(
+                                text = "Scanner",
+                                color = boutontext,
+                                style = MaterialTheme.typography.displaySmall,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
