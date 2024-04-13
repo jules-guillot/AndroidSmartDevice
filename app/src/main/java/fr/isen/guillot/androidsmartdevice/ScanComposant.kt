@@ -3,8 +3,8 @@ package fr.isen.guillot.androidsmartdevice
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,18 +18,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.snapshots.SnapshotStateList
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomScaffoldWithTopAppBar(
     titleText: String,
     titleColor: Color,
     backgroundColor: Color,
-    content: @Composable (PaddingValues) -> Unit // Cette lambda permet d'injecter du contenu dans le Scaffold
+    content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -51,33 +56,36 @@ fun CustomScaffoldWithTopAppBar(
 }
 
 @Composable
-fun TogglePlayPause(command: String, backgroundColor: Color, progressIndicatorColor: Color) {
-    // Remember state for toggle and if it should show the LinearProgressIndicator
+fun TogglePlayPause(
+    command: String,
+    backgroundColor: Color,
+    progressIndicatorColor: Color,
+    devices: SnapshotStateList<BluetoothDevice>,
+    isFirstToggle: MutableState<Boolean>
+) {
     val firstPhotoVisible = remember { mutableStateOf(command == "Pause") }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
     ) {
-        // Determine the image resource based on the toggle state
         val imageResource = if (firstPhotoVisible.value) R.drawable.pause else R.drawable.play
 
         Image(
             painter = painterResource(id = imageResource),
             contentDescription = if (firstPhotoVisible.value) "Pause" else "Play",
             modifier = Modifier
-                .offset(x = 0.dp, y = 0.dp)
                 .padding(horizontal = 150.dp)
                 .height(100.dp)
                 .background(backgroundColor)
                 .clickable {
-                    // Toggle the state when image is clicked
                     firstPhotoVisible.value = !firstPhotoVisible.value
+                    if (isFirstToggle.value) {
+                        isFirstToggle.value = false
+                        // Logique supplémentaire ici si nécessaire
+                    }
                 }
         )
-
-        // Show the LinearProgressIndicator when the state is "Pause"
         if (firstPhotoVisible.value) {
             LinearProgressIndicator(
                 modifier = Modifier
@@ -85,6 +93,29 @@ fun TogglePlayPause(command: String, backgroundColor: Color, progressIndicatorCo
                     .padding(horizontal = 0.dp, vertical = 70.dp),
                 color = progressIndicatorColor
             )
+        }
+    }
+}
+
+data class BluetoothDevice(val name: String, val macAddress: String, val imageResourceId: Int)
+
+@Composable
+fun DeviceItem(device: BluetoothDevice) {
+    Row(
+        modifier = Modifier
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Image(
+            painter = painterResource(id = device.imageResourceId),
+            contentDescription = "Bluetooth Device",
+            modifier = Modifier
+                .size(75.dp)
+        )
+        Column {
+            Text(text = "   ", style = MaterialTheme.typography.bodySmall)
+            Text(text = "   " + device.name, style = MaterialTheme.typography.bodyLarge)
+            Text(text = "           " + device.macAddress, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
