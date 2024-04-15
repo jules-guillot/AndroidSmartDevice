@@ -79,11 +79,11 @@ fun TogglePlayPause(
                 .height(100.dp)
                 .background(backgroundColor)
                 .clickable {
-                    firstPhotoVisible.value = !firstPhotoVisible.value
-                    if (isFirstToggle.value) {
-                        isFirstToggle.value = false
-                        // Logique supplémentaire ici si nécessaire
+                    if (isFirstToggle.value) {  // Check si c'est la première fois
+                        isFirstToggle.value = false  // Mettre à false après le premier clic
+                        // Logique supplémentaire si nécessaire
                     }
+                    firstPhotoVisible.value = !firstPhotoVisible.value
                 }
         )
         if (firstPhotoVisible.value) {

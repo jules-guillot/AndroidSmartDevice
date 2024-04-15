@@ -53,11 +53,14 @@ class ScanActivity : ComponentActivity() {
                             devices = devices,
                             isFirstToggle = isFirstToggle!!
                         )
-                        LazyColumn {
-                            items(devices) { device ->
-                                DeviceItem(device)
+                        if (isFirstToggle!!.value==false) {
+                            LazyColumn {
+                                items(devices) { device ->
+                                    DeviceItem(device)
+                                }
                             }
                         }
+
                     }
                 }
             }
