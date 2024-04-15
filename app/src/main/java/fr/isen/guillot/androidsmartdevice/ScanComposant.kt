@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.*
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,11 +55,10 @@ fun CustomScaffoldWithTopAppBar(
 }
 
 @Composable
-fun TogglePlayPause(
+fun ScanComposant(
     command: String,
     backgroundColor: Color,
     progressIndicatorColor: Color,
-    devices: SnapshotStateList<BluetoothDevice>,
     isFirstToggle: MutableState<Boolean>
 ) {
     val firstPhotoVisible = remember { mutableStateOf(command == "Pause") }

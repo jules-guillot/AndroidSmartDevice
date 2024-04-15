@@ -11,16 +11,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import android.content.Intent
 import androidx.compose.foundation.Image
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.sp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.res.colorResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
+    private lateinit var scanInteraction: ScanInteraction
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        scanInteraction = ScanInteraction(this)
+        scanInteraction.initialize()
+
+        if (!scanInteraction.hasError.value) {
+            scanInteraction.startScanWithPermissionCheck(this)
+        }
         setContent {
             val topbartext = colorResource(id = R.color.vert)
             val background = colorResource(id = R.color.bleu_fonce)

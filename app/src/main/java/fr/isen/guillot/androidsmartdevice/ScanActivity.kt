@@ -9,7 +9,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.LaunchedEffect
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.content.Context
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,19 +30,6 @@ class ScanActivity : ComponentActivity() {
             val devices = remember { mutableStateListOf<BluetoothDevice>() }
             isFirstToggle = remember { mutableStateOf(true) }
 
-            LaunchedEffect(Unit) {
-                devices.add(BluetoothDevice("La tv", "00:11:22:33:44:55", R.drawable.fort))
-                devices.add(BluetoothDevice("La brosse à dent", "00:12:22:33:44:55", R.drawable.faible))
-                devices.add(BluetoothDevice("Le sèche cheveux", "00:15:22:33:44:55", R.drawable.moyen))
-                devices.add(BluetoothDevice("La PS6", "00:11:22:33:47:55", R.drawable.faible))
-                devices.add(BluetoothDevice("L'écran plat de la cuisine", "01:11:22:33:44:55", R.drawable.moyen))
-                devices.add(BluetoothDevice("Thermomix", "00:11:22:33:44:58", R.drawable.fort))
-                devices.add(BluetoothDevice("vélo électrique", "00:12:22:33:44:58", R.drawable.faible))
-                devices.add(BluetoothDevice("L'écran plat de la cuisine2", "01:11:22:33:44:55", R.drawable.moyen))
-                devices.add(BluetoothDevice("Thermomix2", "00:11:22:33:44:58", R.drawable.fort))
-                devices.add(BluetoothDevice("vélo électrique2", "00:12:22:33:44:58", R.drawable.faible))
-            }
-
             MaterialTheme {
                 CustomScaffoldWithTopAppBar(
                     titleText = "          Scanner BLE",
@@ -46,11 +37,10 @@ class ScanActivity : ComponentActivity() {
                     backgroundColor = background
                 ) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
-                        TogglePlayPause(
+                        ScanComposant(
                             command = "Play",
                             backgroundColor = background,
                             progressIndicatorColor = background,
-                            devices = devices,
                             isFirstToggle = isFirstToggle!!
                         )
                         if (isFirstToggle!!.value==false) {
@@ -64,6 +54,72 @@ class ScanActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+}
+class ScanInteraction(private val context: Context) {
+    var isScanning = mutableStateOf(false)
+    var hasError = mutableStateOf(false)
+
+    private val bluetoothAdapter: BluetoothAdapter? by lazy {
+        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as? android.bluetooth.BluetoothManager
+        bluetoothManager?.adapter
+    }
+
+    fun initialize() {
+        if (bluetoothAdapter?.isEnabled != true) {
+            hasError.value = true // Bluetooth n'est pas disponible ou désactivé
+        }
+    }
+
+
+    fun verifyBluetoothStatus(): Boolean {
+        return bluetoothAdapter?.isEnabled ?: false
+    }
+
+    fun requestPermissions(activity: ComponentActivity, onPermissionResult: (Boolean) -> Unit) {
+        val permissionRequest = activity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            onPermissionResult(permissions.all { it.value })
+        }
+
+        permissionRequest.launch(getAllPermissionsForBLE())
+    }
+
+    private fun getAllPermissionsForBLE(): Array<String> {
+        var allPermissions = arrayOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.BLUETOOTH
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            allPermissions += arrayOf(
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_ADMIN
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            allPermissions += Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        }
+        return allPermissions
+    }
+
+    fun startScanWithPermissionCheck(activity: ComponentActivity) {
+        requestPermissions(activity) { hasPermissions ->
+            if (hasPermissions) {
+                startScanning()
+            } else {
+                hasError.value = true // Handle permission denied
+            }
+        }
+    }
+
+    private fun startScanning() {
+        if (verifyBluetoothStatus()) {
+            // Commencer le scan Bluetooth ici
+            isScanning.value = true
+            // Implémentez votre logique de scan
+        } else {
+            hasError.value = true // Handle Bluetooth is turned off
         }
     }
 }
