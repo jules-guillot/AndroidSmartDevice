@@ -70,22 +70,23 @@ fun ScanDevice(
     scanInteraction: ScanInteraction,
 ) {
     val context = LocalContext.current
-    LazyColumn(
-        modifier = Modifier.padding(horizontal = 16.dp)
-    ) {
-        items(scanInteraction.devices) { scanResult ->
-            DeviceItem(
-                scanResult = scanResult,
-                onItemClick = { device ->
-                    // Lancer DeviceActivity avec les informations du périphérique Bluetooth sélectionné
-                    val intent = Intent(context, DeviceActivity::class.java).apply {
-                        putExtra("deviceName", device.name ?: "Unknown Device")
-                        putExtra("deviceAddress", device.address ?: "Unknown Address")
-                        putExtra("deviceRSSI", scanResult.rssi)
+    if (scanInteraction.isScanning) {
+        LazyColumn(
+            modifier = Modifier.padding(horizontal = 16.dp)
+        ) {
+            items(scanInteraction.devices) { scanResult ->
+                DeviceItem(
+                    scanResult = scanResult,
+                    onItemClick = { device ->
+                        val intent = Intent(context, DeviceActivity::class.java).apply {
+                            putExtra("deviceName", device.name ?: "Unknown Device")
+                            putExtra("deviceAddress", device.address ?: "Unknown Address")
+                            putExtra("deviceRSSI", scanResult.rssi)
+                        }
+                        context.startActivity(intent)
                     }
-                    context.startActivity(intent)
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -101,35 +102,56 @@ fun DeviceItem(scanResult: ScanResult, onItemClick: (android.bluetooth.Bluetooth
             .fillMaxWidth()
             .clickable(onClick = {
                 onItemClick(scanResult.device)
-                // Lancer DeviceActivity lors du clic
                 val intent = Intent(context, DeviceActivity::class.java)
                 context.startActivity(intent)
             })
             .padding(vertical = 8.dp)
     ) {
-        Text(
-            text = "Name: ${scanResult.device.name}",
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Address: ${scanResult.device.address}",
-            style = MaterialTheme.typography.bodySmall,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "RSSI: ${scanResult.rssi}",
-            style = MaterialTheme.typography.bodySmall,
-        )
+        if (scanResult.device.name != "null") {
+            val context = LocalContext.current
+            val rssiImage = when (scanResult.rssi) {
+                in -50..0 -> "fort"
+                in -80..-50 -> "moyen"
+                in -100..-80 -> "faible"
+                else -> "out_of_range"
+            }
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.weight(1f).padding(8.dp)) {
+                    Text(
+                        text = "Name: ${scanResult.device.name}",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Address: ${scanResult.device.address}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "RSSI: ${scanResult.rssi}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+
+                Column(modifier = Modifier.weight(1f).padding(8.dp)) {
+                    Image(painter = painterResource(id = context.resources.getIdentifier(rssiImage, "drawable", context.packageName)),
+                        contentDescription = "RSSI Image",
+                        modifier = Modifier.fillMaxWidth())
+                }
+            }
+        }
     }
 }
+
 
 @Composable
 fun ScanComposant(
     command: String,
     backgroundColor: Color,
     progressIndicatorColor: Color,
-    isFirstToggle: MutableState<Boolean>
+    isFirstToggle: MutableState<Boolean>,
+    scanInteraction: ScanInteraction
 ) {
     val firstPhotoVisible = remember { mutableStateOf(command == "Pause") }
     Column(
@@ -148,8 +170,8 @@ fun ScanComposant(
                 .background(backgroundColor)
                 .clickable {
                     if (isFirstToggle.value) {  // Check si c'est la première fois
-                        isFirstToggle.value = false  // Mettre à false après le premier clic
-                        // Logique supplémentaire si nécessaire
+                        isFirstToggle.value = false
+                        scanInteraction.playAction()
                     }
                     firstPhotoVisible.value = !firstPhotoVisible.value
                 }

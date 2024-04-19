@@ -80,9 +80,10 @@ class ScanActivity : ComponentActivity() {
                             command = "Play",
                             backgroundColor = background,
                             progressIndicatorColor = background,
-                            isFirstToggle = isFirstToggle!!
+                            isFirstToggle = isFirstToggle!!,
+                            scanInteraction = scanInteraction
                         )
-                        if (isFirstToggle!!.value==false) {
+                        if (!isFirstToggle!!.value) {
                             ScanDevice(scanInteraction = scanInteraction)
                         }
                     }
@@ -168,7 +169,6 @@ class ScanActivity : ComponentActivity() {
         }
         return allPermissions
     }
-
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()

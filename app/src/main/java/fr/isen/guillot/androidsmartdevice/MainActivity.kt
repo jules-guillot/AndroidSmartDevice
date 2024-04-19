@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 115.dp)
+                                .padding(horizontal = 105.dp)
                                 .height(70.dp),
                             shape = MaterialTheme.shapes.medium,
                             colors = ButtonDefaults.buttonColors(background)
