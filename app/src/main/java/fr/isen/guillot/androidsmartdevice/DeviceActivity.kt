@@ -23,43 +23,66 @@ class DeviceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val deviceName = intent.getStringExtra("deviceName") ?: "Unknown Device"
+        val deviceAddress = intent.getStringExtra("deviceAddress") ?: "Unknown Address"
+        val deviceRSSI = intent.getIntExtra("deviceRSSI", 0)
+        val signalImageRes = intent.getIntExtra("signalImageRes", 0)
+
+
         setContent {
-            val topbartext = colorResource(id = R.color.vert)
-            val background = colorResource(id = R.color.bleu_fonce)
-            val context = LocalContext.current
-            val boutontext = colorResource(id = R.color.bleu_clair)
+            val backgroundColor = colorResource(id = R.color.bleu_fonce)
+            val titleColor = colorResource(id = R.color.vert)
+            val buttonTextColor = colorResource(id = R.color.bleu_clair)
             MaterialTheme {
                 CustomScaffoldWithTopAppBar(
-                    titleText = "  Android Smart Device",
-                    titleColor = topbartext,
-                    backgroundColor = background
+                    titleText = "Device Details",
+                    titleColor = titleColor,
+                    backgroundColor = backgroundColor
                 ) { innerPadding ->
-                    // Ici, vous pouvez ajouter le contenu de votre page en utilisant innerPadding pour respecter les paddings du Scaffold
-                    // Exemple avec une simple liste:
-                    Column(modifier = Modifier.padding(innerPadding)) {
-                        Image(painter = painterResource(id = R.drawable.icon), contentDescription = "Icone App")
+                    Column(modifier = Modifier.padding(innerPadding).fillMaxWidth()) {
+                        Image(
+                            painter = painterResource(id = signalImageRes),
+                            contentDescription = "Signal strength icon",
+                            modifier = Modifier
+                                .height(120.dp)
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                        )
+                        Text(
+                            text = "Name: $deviceName",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        Text(
+                            text = "Address: $deviceAddress",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        Text(
+                            text = "RSSI: $deviceRSSI dBm",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(16.dp)
+                        )
                         Button(
                             onClick = {
-                                val intent = Intent(context, ScanActivity::class.java)
-                                context.startActivity(intent)
+                                // Connect logic here
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 115.dp)
-                                .height(70.dp),
-                            shape = MaterialTheme.shapes.medium,
-                            colors = ButtonDefaults.buttonColors(background)
+                                .padding(horizontal = 16.dp)
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor)
                         ) {
                             Text(
-                                text = "Scanner",
-                                color = boutontext,
-                                style = MaterialTheme.typography.displaySmall,
-                                modifier = Modifier.fillMaxWidth()
+                                text = "Connect to Device",
+                                color = buttonTextColor,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
                     }
                 }
             }
         }
+
     }
 }
